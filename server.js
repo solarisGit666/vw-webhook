@@ -15,12 +15,34 @@ app.post('/visibilidad', function (req, res) {
   deploy(res)
 });
 
+app.post('/api', function (req, res) {
+  console.log(req.body.ref)
+  console.log(req.body.sender.login)
+  deploy(res, './api.sh')
+
+  const send = require('gmail-send')({
+    user: 'visibilidadweb8@gmail.com',
+    pass: 'test1234,',
+    to:   'enriquegf01@gmail.com',
+    subject: 'deploy completado',
+  });
+
+  send ({
+    text: 'el deploy de la api-prod se completo sin errores',}
+    (error,result,fullResult) =>  {
+      if(error) console.error(error);
+      console.log(result);
+    })
+
+});
+
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
-function deploy(res){
-  childProcess.exec('./deploy.sh', function(err, stdout, stderr){
+function deploy(res, script){
+  childProcess.exec(script, function(err, stdout, stderr){
       if (err) {
         console.error(err);
         return res.sendStatus(500);
